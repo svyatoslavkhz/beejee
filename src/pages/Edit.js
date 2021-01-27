@@ -5,7 +5,7 @@ import { useAuth } from '../hooks/auth.hook';
 import { useHistory, useLocation} from 'react-router-dom';
 import { useMessage } from '../hooks/message.hook';
 
-export const Edit = (props) => {
+export const Edit = () => {
 
     const [data, setData] = useState({})
 

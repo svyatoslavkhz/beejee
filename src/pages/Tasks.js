@@ -1,6 +1,7 @@
 import React, {useState, useEffect, useCallback} from 'react';
 import { useHttp } from '../hooks/http.hook';
 import {useAuth} from '../hooks/auth.hook';
+import { NavLink } from 'react-router-dom';
 
  
 export const Tasks = () => {
@@ -83,7 +84,7 @@ export const Tasks = () => {
                                     <td>{e.email}</td>
                                     <td>{e.text}</td>
                                     <td>{e.status} 
-                                        {isAuthenticated && <a href={`/edit/${e.id}`}> 🖍</a>}
+                                        {isAuthenticated && <NavLink to={`/edit/${e.id}`}> 🖍</NavLink>}
                                     </td>
                                 </tr>
                             )

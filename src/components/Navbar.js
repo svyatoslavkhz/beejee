@@ -1,5 +1,5 @@
 import React, { useContext } from 'react';
-import {useHistory} from 'react-router-dom';
+import {useHistory, Link} from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 import { useAuth } from '../hooks/auth.hook';
 
@@ -23,16 +23,16 @@ export const Navbar = () => {
         if (isAuthenticated) {
             return (<li><a href="" onClick={logoutHandler}>Выйти</a></li>)
         }
-        return (<li><a href="/login">Аккаунт</a></li>)
+        return (<li><Link to="/login">Аккаунт</Link></li>)
     }
 
     return (
         <nav>
         <div className="nav-wrapper lime darken-3">
-            <a href='/' className="brand-logo">Task</a>
+            <Link to='/' className="brand-logo">Task</Link>
             <ul id="nav-mobile" className="right hide-on-med-and-down">
-            <li><a href="/">Главная</a></li>
-            <li><a href="/create">Создать</a></li>
+            <li><Link to="/">Главная</Link></li>
+            <li><Link to="/create">Создать</Link></li>
             {account()}
             </ul>
         </div>
