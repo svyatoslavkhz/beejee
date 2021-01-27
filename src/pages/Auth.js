@@ -1,25 +1,39 @@
-import React, {useState, useEffect} from 'react';
-
-
+import React, {useState, useEffect, useContext} from 'react';
+import validator from 'validator';
+import {useHttp} from '../hooks/http.hook';
+import {useMessage} from '../hooks/message.hook'
+import {AuthContext} from '../context/AuthContext'
+import { useHistory } from 'react-router-dom';
 export const Auth = () => {
 
+    const history = useHistory();
+    const auth = useContext(AuthContext);
+    const message = useMessage();
     const [form, setForm] = useState({
-        login: '', password: ''
+        username: '', password: ''
     })
-    
+    const {request} = useHttp();
 
     const changeHandler = event => {
         setForm({ ...form, [event.target.name]: event.target.value })
     }
     
     const loginHandler = async() => {
+        if(validator.isEmpty(form.username) || validator.isEmpty(form.password)){
+            return message('Все поля обязательны к заполнению');
+          }
         try {
-        
+            const task = new FormData();
+            task.append('username', form.username);
+            task.append('password', form.password);
+            const data = await request(`/login`, '' , 'POST', task, {})
+            if (data.message.token) {
+                auth.login(data.message.token)
+                history.go(-1)
+            }
+            if (data.status==='error') message(data.message.password)
+            if (data.message.token)message('Вы вошли в аккаунт')
         } catch (e) {}
-    }
-
-    const logoutHandler = () => {
-        return null
     }
 
     useEffect (()=>{
@@ -36,12 +50,12 @@ export const Auth = () => {
                     <div>
                         <div className="input-field">
                         <input 
-                            placeholder="Введите login" 
-                            id="login" 
+                            placeholder="Введите логин" 
+                            id="username" 
                             type="text"
-                            name="login"
+                            name="username"
                             className="yellow-input"
-                            value={form.login}
+                            value={form.username}
                             onChange={changeHandler}
                         />
                         <label htmlFor="login">Login</label>

@@ -3,11 +3,9 @@ import validator from 'validator';
 import {useHistory} from 'react-router-dom';
 import { useHttp } from '../hooks/http.hook';
 import {useMessage} from '../hooks/message.hook';
-import config from '../config/default.json';
 
 export const Create = () => {
 
-    const {domain} = config;
     const message = useMessage();
     const history = useHistory()
     const {request} = useHttp();
@@ -22,7 +20,7 @@ export const Create = () => {
     }, [])
 
     const changeHandler = event => {
-        setForm({...form, [event.target.name]: event.target.value})
+        setForm({...form, [event.target.name]: event.target.value.replace(/(<([^>]+)>)/gi, "")})
     }
 
    const submitHandler = async () => {
@@ -32,13 +30,14 @@ export const Create = () => {
        if(!validator.isEmail(form.email)){
         return message('Введите E-mail');
        }
-        message('Отправляем');
         try {
-           const data = await request(`${domain}/create?developer=test2`, 'POST', {...form}, {
-
-           })
-           
-            //history.push(`/`)
+            const task = new FormData();
+            task.append('username', form.username);
+            task.append('email', form.email);
+            task.append('text', form.text);
+            const data = await request(`/create`, '' , 'POST', task, {})
+            history.push(`/`)
+            message('Добавлено')
         } catch (e) {}
         }
 
