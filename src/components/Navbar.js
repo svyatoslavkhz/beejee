@@ -8,32 +8,15 @@ import { useAuth } from '../hooks/auth.hook';
 
 export const Navbar = () => {
     
-    const auth = useContext(AuthContext);
-    const {token} = useAuth();
-    const isAuthenticated = !!token;
-    const history = useHistory();
-
-    const logoutHandler = event => {
-        event.preventDefault();
-        auth.logout();
-        history.go(0);
-    }
-
-    const account = () => {
-        if (isAuthenticated) {
-            return (<li><a href="" onClick={logoutHandler}>Выйти</a></li>)
-        }
-        return (<li><Link to="/login">Аккаунт</Link></li>)
-    }
 
     return (
         <nav>
         <div className="nav-wrapper lime darken-3">
-            <Link to='/' className="brand-logo">Task</Link>
+            <a href='/' className="brand-logo">Task</a>
             <ul id="nav-mobile" className="right hide-on-med-and-down">
             <li><Link to="/">Главная</Link></li>
             <li><Link to="/create">Создать</Link></li>
-            {account()}
+            <li><Link to="/login">Аккаунт</Link></li>
             </ul>
         </div>
         </nav>

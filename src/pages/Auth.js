@@ -42,7 +42,7 @@ export const Auth = () => {
     const logoutHandler = event => {
         event.preventDefault();
         auth.logout();
-        history.go(0);
+        history.push('/');
     }
 
     useEffect (()=>{

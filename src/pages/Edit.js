@@ -5,20 +5,23 @@ import { useAuth } from '../hooks/auth.hook';
 import { useHistory, useLocation} from 'react-router-dom';
 import { useMessage } from '../hooks/message.hook';
 
+
 export const Edit = () => {
 
     const [data, setData] = useState({})
-
+    const storageName = 'userData';
+    const checkName = 'checkData';
     const auth = useContext(AuthContext);
     const {request} = useHttp();
-    const {token} = useAuth();
+    let {token} = useAuth();
     const [newText, setNewText] = useState('');
-    const [checkStatus, setCheckStatus] = useState(false);
+    const [checkStatus, setCheckStatus] = useState();
     const [statusTask, setStatusTask] = useState(0);
     const message = useMessage();
     let location = useLocation();
-    const isAuthenticated = !!token;
+    let isAuthenticated = !!token;
     const history = useHistory();
+    const idTask = location.pathname;
     
     const fetched = async () => {
         const task = new FormData();
@@ -42,28 +45,54 @@ export const Edit = () => {
           else setStatusTask(0)
     }
 
+    const reload = () => {
+        const data = JSON.parse(localStorage.getItem(storageName))
+        if (data && data.token) {
+            isAuthenticated = true;
+        } else isAuthenticated = false}
+
     useEffect(()=> {
         statusNumTask()
     }, [checkStatus, newText])
 
     const submitHandler = async () => {
-           statusNumTask();
+            reload();
+            statusNumTask();
             try {
                const task = new FormData();
                if (statusTask===11 || statusTask===1) {task.append('text', newText);}
                task.append('status', statusTask);
                task.append('token', token);
-               const data = await request(`${location.pathname}`, '' , 'POST', task, {})
-               if (data.status==='ok') {message('Записано')}
-               if (data.message.token) {history.push('/login'); message('Авторизуйтесь')}
+                if (isAuthenticated) {const data = await request(`${idTask}`, '' , 'POST', task, {});
+                if (data.status==='ok') {message('Записано')}
+                if (data.message.token) {history.push('/login'); message('Авторизуйтесь')};
+                }
+                else {return history.push('/login')}
            } catch (e) {}
     }
 
-
     const checkboxStatusTask = e => {
-        checkStatus === true ? setCheckStatus(false) : setCheckStatus(true);
+        if (checkStatus === true ){
+            setCheckStatus(false)
+            localStorage.removeItem(checkName)
+        } else {
+            setCheckStatus(true);
+            localStorage.setItem(checkName, JSON.stringify({
+                statusOk: idTask
+            }))
+        }
     }
 
+    const ifOk = () => {
+        const data = JSON.parse(localStorage.getItem(checkName));
+        if (data && data.statusOk===idTask) {
+        setCheckStatus(true)
+        }
+    }
+
+    useEffect( () => {
+        ifOk();
+    }, [ifOk])
 
     return (
     <div>
@@ -86,6 +115,7 @@ export const Edit = () => {
                 <input 
                     type="checkbox" 
                     onChange={checkboxStatusTask}
+                    checked={checkStatus}
                 />
                     <span>Выполнено</span>
                  </label>
